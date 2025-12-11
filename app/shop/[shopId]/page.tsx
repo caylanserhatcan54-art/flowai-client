@@ -1,70 +1,58 @@
 "use client";
-
 import { useEffect, useState } from "react";
 
-export default function ShopPage({ params }: any) {
+export default function ShopPage({ params }: { params: { shopId: string } }) {
   const { shopId } = params;
 
   const [loading, setLoading] = useState(true);
   const [shop, setShop] = useState<any>(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://ai-shop-backend-2.onrender.com";
 
   useEffect(() => {
     async function loadShop() {
       try {
-        const res = await fetch(`${API_URL}/shop/public/${shopId}`);
-
-        if (!res.ok) {
-          setError("Sunucu hatası!");
-          setLoading(false);
-          return;
-        }
-
+        const res = await fetch(`${API_URL}/api/shop/public/${shopId}`);
         const data = await res.json();
 
-        if (!data.ok) {
+        // BACKEND CEVABI:
+        // { "tamam": "doğru", "mağaza": {...} }
+
+        if (!data.tamam) {
           setError("Mağaza bulunamadı ❌");
-          setLoading(false);
-          return;
+        } else {
+          setShop(data.mağaza);
         }
-
-        setShop(data.shop);
-        setLoading(false);
-
       } catch (err) {
-        console.error(err);
-        setError("Bağlantı hatası!");
-        setLoading(false);
+        console.error("Fetch error:", err);
+        setError("Sunucu hatası!");
       }
+
+      setLoading(false);
     }
 
     loadShop();
-  }, [shopId, API_URL]);
+  }, [shopId]);
 
   if (loading) return <p>Yükleniyor...</p>;
-  if (error) return <p>{error}</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Mağaza: {shop.shopName}</h1>
+      <h1>Mağaza: {shop.id}</h1>
+      <p>Mağaza verileri başarıyla yüklendi ✔</p>
 
-      <p>Mağaza ID: {shop.shopId}</p>
-      <p>Platform: {shop.platform}</p>
-
-      <hr />
-
-      {/* Sohbet Asistanı */}
-      <iframe
-        src={`/assistant?shop=${shopId}`}
+      <div
         style={{
-          width: "100%",
-          height: "80vh",
-          border: "1px solid #ddd",
-          borderRadius: "8px",
+          marginTop: 20,
+          padding: 20,
+          background: "#f3f3f3",
+          borderRadius: 10,
         }}
-      />
+      >
+        <p>AI Asistan Yakında Burada 🤖</p>
+      </div>
     </div>
   );
 }
