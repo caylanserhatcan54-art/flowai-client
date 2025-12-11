@@ -2,31 +2,24 @@
 import { useEffect, useState } from "react";
 
 export default function ShopPage({ params }: { params: { shopId?: string } }) {
+  console.log("PARAMS:", params);
+
   const shopId = params?.shopId;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const [loading, setLoading] = useState(true);
   const [shop, setShop] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL =
-    process.env.NEXT_PUBLIC_API_URL || "https://ai-shop-backend-2.onrender.com";
+  // Eğer shopId gelmiyorsa
+  if (!shopId) {
+    return <p>shopId henüz gelmedi, bekleniyor...</p>;
+  }
 
   useEffect(() => {
-    // ❌ shopId yoksa fetch başlatma
-    if (!shopId) {
-      console.log("shopId henüz gelmedi, bekleniyor...");
-      return;
-    }
-
-    console.log("SHOP ID:", shopId);
-    console.log("FETCH:", `${API_URL}/api/shop/public/${shopId}`);
-
     async function loadShop() {
       try {
-        const res = await fetch(`${API_URL}/api/shop/public/${shopId}`, {
-          cache: "no-store",
-        });
-
+        const res = await fetch(`${API_URL}/api/shop/public/${shopId}`);
         const data = await res.json();
 
         if (!data.ok) {
@@ -34,8 +27,9 @@ export default function ShopPage({ params }: { params: { shopId?: string } }) {
         } else {
           setShop(data.shop);
         }
+
       } catch (err) {
-        console.error("Fetch error:", err);
+        console.error(err);
         setError("Sunucu hatası!");
       }
 
@@ -45,14 +39,13 @@ export default function ShopPage({ params }: { params: { shopId?: string } }) {
     loadShop();
   }, [shopId]);
 
-  if (!shopId) return <p>Hazırlanıyor...</p>;
   if (loading) return <p>Yükleniyor...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Mağaza: {shopId}</h1>
-      <p>Mağaza verileri başarıyla yüklendi ✔</p>
+      <h1>Mağaza: {shop?.shopId}</h1>
+      <p>AI Asistan hazır!</p>
     </div>
   );
 }
