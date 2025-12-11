@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 export default function ShopPage({ params }: { params: { shopId: string } }) {
   const { shopId } = params;
 
+  // 🔥 Debug Log
+  console.log("SHOP ID:", shopId);
+
   const [loading, setLoading] = useState(true);
   const [shop, setShop] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
