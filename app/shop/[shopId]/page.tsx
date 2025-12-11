@@ -14,9 +14,9 @@ export default function ShopPage({ params }: { params: { shopId: string } }) {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://ai-shop-backend-2.onrender.com";
 
   useEffect(() => {
-    console.log("NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
+    console.log("ENV:", process.env.NEXT_PUBLIC_API_URL);
     console.log("SHOP ID:", shopId);
-    console.log("FETCH URL:", `${process.env.NEXT_PUBLIC_API_URL}/api/shop/public/${shopId}`);
+    console.log("FETCH:", `${process.env.NEXT_PUBLIC_API_URL}/api/shop/public/${shopId}`);
 
     async function loadShop() {
       try {
